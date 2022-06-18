@@ -1,5 +1,6 @@
 package com.alkemy.disney.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,6 +31,7 @@ public class PeliculaSerie {
     @ManyToMany(mappedBy = "peliculaSeries")
     private List<Personaje> personajes;
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "genero_id", nullable = false)
     private Genero genero;

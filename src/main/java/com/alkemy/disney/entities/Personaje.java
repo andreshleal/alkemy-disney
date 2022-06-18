@@ -1,5 +1,6 @@
 package com.alkemy.disney.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +27,7 @@ public class Personaje {
     private Integer peso;
     private String historia;
 
+    @JsonBackReference
     @JoinTable(
             name = "personaje_pelicula_serie",
             joinColumns = @JoinColumn(name = "personaje_id", referencedColumnName = "id"),
