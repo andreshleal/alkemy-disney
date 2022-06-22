@@ -3,6 +3,7 @@ package com.alkemy.disney.services;
 import com.alkemy.disney.dto.PersonajeDTO;
 import com.alkemy.disney.dto.RespuestaPaginationDTO;
 import com.alkemy.disney.entities.Personaje;
+import com.alkemy.disney.exceptions.ResourceNotFoundException;
 import com.alkemy.disney.repositories.PersonajeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +24,8 @@ public class PersonajeServiceImpl implements PersonajeService{
 
     @Override
     public RespuestaPaginationDTO getPersonajes(
-            int page, int size, String sortBy, String sortDir
+            int page, int size, String sortBy, String sortDir,
+            String nombre, int edad
     ) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
@@ -31,6 +33,7 @@ public class PersonajeServiceImpl implements PersonajeService{
 
         Pageable pageable = PageRequest.of(page, size, sort);
 
+        //Page<Personaje> personajes = personajeRepository.findPersonajeByNombreAndEdad(nombre, edad, pageable);
         Page<Personaje> personajes = personajeRepository.findAll(pageable);
         List<Personaje> listaPersonajes = personajes.getContent();
 
@@ -49,24 +52,39 @@ public class PersonajeServiceImpl implements PersonajeService{
     }
 
     @Override
-    public Optional<PersonajeDTO> getPersonaje(Long id) {
-        return Optional.empty();
+    public PersonajeDTO getPersonaje(Long id) {
+        Optional<Personaje> personaje = personajeRepository.findById(id);
+        personaje.orElseThrow(() -> new ResourceNotFoundException("Personaje","id",id));
+        return personajeAPersonajeDTO(personaje.get());
     }
 
     @Override
     public PersonajeDTO createPersonaje(PersonajeDTO personajeDTO) {
-        return null;
+        return personajeAPersonajeDTO(personajeRepository.save(personajeDTOAPersonaje(personajeDTO)));
     }
 
     @Override
     public PersonajeDTO updatePersonaje(PersonajeDTO personajeDTO, Long id) {
-        return null;
+        Optional<Personaje> personaje = personajeRepository.findById(id);
+        personaje.orElseThrow(() -> new ResourceNotFoundException("Personaje","id",id));
+
+        personaje.get().setImagen(personajeDTO.getImagen());
+        personaje.get().setNombre(personajeDTO.getNombre());
+        personaje.get().setEdad(personajeDTO.getEdad());
+        personaje.get().setPeso(personajeDTO.getPeso());
+        personaje.get().setHistoria(personajeDTO.getHistoria());
+        return personajeAPersonajeDTO(personajeRepository.save(personaje.get()));
     }
 
     @Override
     public void deletePersonaje(Long id) {
-
+        Optional<Personaje> personaje = personajeRepository.findById(id);
+        personaje.orElseThrow(() -> new ResourceNotFoundException("Personaje","id",id));
+        personajeRepository.delete(personaje.get());
     }
+
+
+
 
     private PersonajeDTO personajeAPersonajeDTO(Personaje personaje){
         return modelMapper.map(personaje, PersonajeDTO.class);
