@@ -8,7 +8,7 @@ public interface PersonajeService {
 
     public RespuestaPaginationDTO getPersonajes(
             int page, int size, String sortBy, String sortDir,
-            String nombre, int edad
+            String nombre, int edad, Long idMovie
     );
 
     public PersonajeDTO getPersonaje(Long id);

@@ -2,8 +2,10 @@ package com.alkemy.disney.services;
 
 import com.alkemy.disney.dto.PersonajeDTO;
 import com.alkemy.disney.dto.RespuestaPaginationDTO;
+import com.alkemy.disney.entities.PeliculaSerie;
 import com.alkemy.disney.entities.Personaje;
 import com.alkemy.disney.exceptions.ResourceNotFoundException;
+import com.alkemy.disney.repositories.PeliculaSerieRepository;
 import com.alkemy.disney.repositories.PersonajeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,30 +13,32 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class PersonajeServiceImpl implements PersonajeService{
 
     @Autowired private ModelMapper modelMapper;
     @Autowired private PersonajeRepository personajeRepository;
+    @Autowired private PeliculaSerieRepository peliculaSerieRepository;
 
 
     @Override
     public RespuestaPaginationDTO getPersonajes(
             int page, int size, String sortBy, String sortDir,
-            String nombre, int edad
+            String nombre, int edad, Long idMovie
     ) {
 
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-
-        //Page<Personaje> personajes = personajeRepository.findPersonajeByNombreAndEdad(nombre, edad, pageable);
-        Page<Personaje> personajes = personajeRepository.findAll(pageable);
+        Page<Personaje> personajes = filterPersonaje(nombre, edad, idMovie, pageable);
+        //Page<Personaje> personajes = personajeRepository.findAll(pageable);
         List<Personaje> listaPersonajes = personajes.getContent();
 
         List<PersonajeDTO> personajeDTOS = listaPersonajes.stream()
@@ -50,6 +54,7 @@ public class PersonajeServiceImpl implements PersonajeService{
                 personajes.isLast()
         );
     }
+
 
     @Override
     public PersonajeDTO getPersonaje(Long id) {
@@ -84,6 +89,30 @@ public class PersonajeServiceImpl implements PersonajeService{
     }
 
 
+
+    private Page<Personaje> filterPersonaje(String nombre, int edad, Long idMovie, Pageable pageable) {
+        Page<Personaje> personajes = null;
+        Optional<PeliculaSerie> peliculaSerie = peliculaSerieRepository.findById(idMovie);
+
+        if(nombre == null && edad == 0 && idMovie == 0){
+            personajes = personajeRepository.findAll(pageable);
+        } else if (nombre != null && edad != 0 && idMovie == 0) {
+            personajes = personajeRepository.findPersonajeByNombreAndEdad(nombre, edad, pageable);
+        } else if (nombre != null && edad == 0 && idMovie > 0) {
+            personajes = personajeRepository
+                    .findPersonajeByNombreAndPeliculaSeries(nombre, peliculaSerie.get(), pageable);
+        }else if(nombre == null && edad != 0 && idMovie > 0){
+            personajes = personajeRepository
+                    .findPersonajeByEdadAndPeliculaSeries(edad, peliculaSerie.get(), pageable);
+        }else if (nombre != null){
+            personajes = personajeRepository.findPersonajeByNombre(nombre,pageable);
+        } else if (edad != 0) {
+            personajes = personajeRepository.findPersonajeByEdad(edad, pageable);
+        } else if (idMovie > 0) {
+            personajes = personajeRepository.findPersonajeByPeliculaSeries(peliculaSerie.get(), pageable);
+        }
+        return personajes;
+    }
 
 
     private PersonajeDTO personajeAPersonajeDTO(Personaje personaje){
