@@ -12,7 +12,7 @@ public class PaginationConstant {
     public static final String ID_MOVIE = "0";
 
 
-    public static final String ID_PERSONAJE = "0";
+    public static final String ID_GENERO = "0";
 
 
 }

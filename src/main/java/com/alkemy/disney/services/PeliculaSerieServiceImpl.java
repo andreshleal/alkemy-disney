@@ -2,9 +2,11 @@ package com.alkemy.disney.services;
 
 import com.alkemy.disney.dto.PeliculaSerieDTO;
 import com.alkemy.disney.dto.RespuestaPaginationDTO;
+import com.alkemy.disney.entities.Genero;
 import com.alkemy.disney.entities.PeliculaSerie;
 import com.alkemy.disney.entities.Personaje;
 import com.alkemy.disney.exceptions.ResourceNotFoundException;
+import com.alkemy.disney.repositories.GeneroRepository;
 import com.alkemy.disney.repositories.PeliculaSerieRepository;
 import com.alkemy.disney.repositories.PersonajeRepository;
 import org.modelmapper.ModelMapper;
@@ -27,19 +29,21 @@ public class PeliculaSerieServiceImpl implements PeliculaSerieService{
 
     @Autowired private PersonajeRepository personajeRepository;
 
+    @Autowired private GeneroRepository generoRepository;
+
     @Autowired private ModelMapper modelMapper;
 
 
     @Override
     public RespuestaPaginationDTO getPeliculasSeries(
             int page, int size, String sortBy, String sortDir,
-            String titulo, Long idPersonaje
+            String titulo, Long idGenero
     ) {
         Sort sort = sortDir.equalsIgnoreCase(Sort.Direction.ASC.name()) ?
                 Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        Page<PeliculaSerie> peliculaSeries = filterPeliculaSerie(titulo, idPersonaje, pageable);
+        Page<PeliculaSerie> peliculaSeries = filterPeliculaSerie(titulo, idGenero, pageable);
 
         List<PeliculaSerie> listaPeliculaSerie = peliculaSeries.getContent();
 
@@ -94,21 +98,21 @@ public class PeliculaSerieServiceImpl implements PeliculaSerieService{
 
 
 
-    private Page<PeliculaSerie> filterPeliculaSerie(String titulo, Long idPersonaje, Pageable pageable) {
+    private Page<PeliculaSerie> filterPeliculaSerie(String titulo, Long idGenero, Pageable pageable) {
         Page<PeliculaSerie> peliculaSeries = null;
-        Optional<Personaje> personaje = personajeRepository.findById(idPersonaje);
+        Optional<Genero> genero = generoRepository.findById(idGenero);
 
-        if(titulo == null && idPersonaje == 0){
+        if(titulo == null && idGenero == 0){
             peliculaSeries = peliculaSerieRepository.findAll(pageable);
-        }else if(titulo != null && idPersonaje > 0){
-            peliculaSeries = peliculaSerieRepository.findPeliculaSeriesByTituloAndPersonajes(
-                    titulo, personaje.get(), pageable
+        }else if(titulo != null && idGenero > 0){
+            peliculaSeries = peliculaSerieRepository.findPeliculaSeriesByTituloAndGenero(
+                    titulo, genero.get(), pageable
             );
         } else if (titulo != null) {
             peliculaSeries = peliculaSerieRepository.findPeliculaSeriesByTitulo(titulo, pageable);
-        }else if (idPersonaje > 0){
-            peliculaSeries = peliculaSerieRepository.findPeliculaSerieByPersonajes(
-                    personaje.get(), pageable
+        }else if (idGenero > 0){
+            peliculaSeries = peliculaSerieRepository.findPeliculaSerieByGenero(
+                    genero.get(), pageable
             );
         }
 
