@@ -24,6 +24,7 @@ public class Genero {
     private String nombre;
     private String imagen;
 
+    // hola homer from and
     @JsonBackReference
     @OneToMany(cascade = {CascadeType.PERSIST}, mappedBy = "genero",orphanRemoval = true)
     private List<PeliculaSerie> peliculaSeries;
