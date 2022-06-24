@@ -12,9 +12,9 @@ public interface PeliculaSerieRepository extends JpaRepository<PeliculaSerie, Lo
 
     Page<PeliculaSerie> findPeliculaSeriesByTitulo(String titulo, Pageable pageable);
 
-    Page<PeliculaSerie> findPeliculaSeriesByPersonaje(Personaje personaje, Pageable pageable);
+    Page<PeliculaSerie> findPeliculaSerieByPersonajes(Personaje personaje, Pageable pageable);
 
-    Page<PeliculaSerie> findPeliculaSeriesByTituloAndPersonaje(
+    Page<PeliculaSerie> findPeliculaSeriesByTituloAndPersonajes(
             String titulo, Personaje personaje, Pageable pageable
     );
 
