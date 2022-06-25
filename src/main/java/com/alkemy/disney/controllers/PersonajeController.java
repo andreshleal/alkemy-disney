@@ -26,8 +26,7 @@ public class PersonajeController {
             @RequestParam(name = "name", required = false) String nombre,
             @RequestParam(name = "age", defaultValue = PaginationConstant.EDAD, required = false) int edad,
             @RequestParam(name = "movies", defaultValue = PaginationConstant.ID_MOVIE, required = false) Long idMovie
-            ){
-        System.out.println(edad+ idMovie+nombre);
+    ){
         return ResponseEntity.ok()
                 .body(personajeService
                         .getPersonajes(page, size, sortBy, sortDir, nombre, edad, idMovie));
@@ -36,6 +35,11 @@ public class PersonajeController {
     @PostMapping
     public ResponseEntity<PersonajeDTO> savePersonaje(@RequestBody PersonajeDTO personajeDTO){
         return new ResponseEntity<>(personajeService.createPersonaje(personajeDTO),HttpStatus.CREATED);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<PersonajeDTO> getPersonaje(@PathVariable("id") Long id){
+        return new ResponseEntity<>(personajeService.getPersonaje(id), HttpStatus.OK);
     }
 
     @PutMapping("/{id}")

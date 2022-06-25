@@ -1,6 +1,7 @@
 package com.alkemy.disney.entities;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,10 +25,10 @@ public class Genero {
     private String nombre;
     private String imagen;
 
-    // hola homer from and
-    @JsonBackReference
-    @OneToMany(cascade = {CascadeType.PERSIST}, mappedBy = "genero",orphanRemoval = true)
-    private List<PeliculaSerie> peliculaSeries;
+
+//    @OneToMany(cascade = {CascadeType.PERSIST}, mappedBy = "genero",orphanRemoval = true)
+    @OneToMany(cascade = {CascadeType.PERSIST}, mappedBy = "genero")
+    private List<Pelicula> peliculas;
 
 
 }

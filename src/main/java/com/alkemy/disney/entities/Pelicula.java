@@ -1,6 +1,8 @@
 package com.alkemy.disney.entities;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,8 +17,8 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "peliculas_series")
-public class PeliculaSerie {
+@Table(name = "peliculas")
+public class Pelicula {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +30,17 @@ public class PeliculaSerie {
     private Integer calificacion;
 
 
-    @ManyToMany(mappedBy = "peliculaSeries")
+    @JoinTable(
+            name = "personaje_pelicula",
+            joinColumns = @JoinColumn(name = "pelicula_id", nullable = false),
+            inverseJoinColumns = @JoinColumn(name="personaje_id", nullable = false)
+    )
+    @ManyToMany(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     private List<Personaje> personajes;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "genero_id", nullable = false)
+
+    @ManyToOne
+    @JoinColumn(name = "genero_id")
     private Genero genero;
 
 

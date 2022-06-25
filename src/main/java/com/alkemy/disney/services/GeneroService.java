@@ -8,7 +8,7 @@ public interface GeneroService {
 
     public List<GeneroDTO> getGeneros();
 
-    public Optional<GeneroDTO>  getGenero(Long id);
+    public GeneroDTO getGenero(Long id);
 
     public GeneroDTO createGenero(GeneroDTO generoDTO);
 

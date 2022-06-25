@@ -1,8 +1,8 @@
 package com.alkemy.disney.controllers;
 
-import com.alkemy.disney.dto.PeliculaSerieDTO;
+import com.alkemy.disney.dto.PeliculaDTO;
 import com.alkemy.disney.dto.RespuestaPaginationDTO;
-import com.alkemy.disney.services.PeliculaSerieService;
+import com.alkemy.disney.services.PeliculaService;
 import com.alkemy.disney.utilities.PaginationConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/movies")
-public class PeliculaSerieController {
+public class PeliculaController {
 
-    @Autowired private PeliculaSerieService peliculaSerieService;
+    @Autowired private PeliculaService peliculaService;
 
     @GetMapping
     public ResponseEntity<RespuestaPaginationDTO> getPeliculasSeries(
@@ -24,34 +24,36 @@ public class PeliculaSerieController {
             @RequestParam(name = "name", required = false) String titulo,
             @RequestParam(defaultValue = PaginationConstant.ID_GENERO, name = "genre", required = false ) Long id
     ){
-        return new ResponseEntity<>(peliculaSerieService
-                .getPeliculasSeries(page, size, sortBy, sortDir, titulo, id), HttpStatus.OK);
+        return new ResponseEntity<>(peliculaService
+                .getPeliculas(page, size, sortBy, sortDir, titulo, id), HttpStatus.OK);
     }
 
+
+
     @GetMapping("/{id}")
-    public ResponseEntity<PeliculaSerieDTO> getPeliculaSerie(@PathVariable("id") Long id){
-        return ResponseEntity.ok().body(peliculaSerieService.getPeliculaSerie(id));
+    public ResponseEntity<PeliculaDTO> getPeliculaSerie(@PathVariable("id") Long id){
+        return ResponseEntity.ok().body(peliculaService.getPelicula(id));
     }
 
     @PostMapping
-    public ResponseEntity<PeliculaSerieDTO> savePeliculaSerie(@RequestBody PeliculaSerieDTO peliculaSerieDTO){
-        return new ResponseEntity<>(peliculaSerieService
-                .createPeliculaSerie(peliculaSerieDTO), HttpStatus.CREATED);
+    public ResponseEntity<PeliculaDTO> savePeliculaSerie(@RequestBody PeliculaDTO peliculaDTO){
+        return new ResponseEntity<>(peliculaService
+                .createPelicula(peliculaDTO), HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PeliculaSerieDTO> updatePelicuaSerie(
+    public ResponseEntity<PeliculaDTO> updatePelicuaSerie(
             @PathVariable Long id,
-            @RequestBody PeliculaSerieDTO peliculaSerieDTO
+            @RequestBody PeliculaDTO peliculaDTO
     ){
         return ResponseEntity.status(HttpStatus.CREATED).body(
-                peliculaSerieService.updatePeliculaSerie(peliculaSerieDTO, id));
+                peliculaService.updatePelicula(peliculaDTO, id));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deletePeliculaSerie(@PathVariable(name = "id") Long id){
-        peliculaSerieService.deletePeliculaSerie(id);
+        peliculaService.deletePelicula(id);
     }
 
 }

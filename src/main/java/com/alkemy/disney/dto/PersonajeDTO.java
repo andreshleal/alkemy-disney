@@ -1,6 +1,7 @@
 package com.alkemy.disney.dto;
 
-import com.alkemy.disney.entities.PeliculaSerie;
+import com.alkemy.disney.entities.Pelicula;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,6 +20,8 @@ public class PersonajeDTO {
     private Integer edad;
     private Integer peso;
     private String historia;
-    private List<PeliculaSerie> peliculaSeries;
+
+    @JsonIgnoreProperties({"personajes","genero"})
+    private List<Pelicula> peliculas;
 
 }

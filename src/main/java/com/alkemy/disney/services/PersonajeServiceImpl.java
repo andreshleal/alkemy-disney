@@ -2,10 +2,10 @@ package com.alkemy.disney.services;
 
 import com.alkemy.disney.dto.PersonajeDTO;
 import com.alkemy.disney.dto.RespuestaPaginationDTO;
-import com.alkemy.disney.entities.PeliculaSerie;
+import com.alkemy.disney.entities.Pelicula;
 import com.alkemy.disney.entities.Personaje;
 import com.alkemy.disney.exceptions.ResourceNotFoundException;
-import com.alkemy.disney.repositories.PeliculaSerieRepository;
+import com.alkemy.disney.repositories.PeliculaRepository;
 import com.alkemy.disney.repositories.PersonajeRepository;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class PersonajeServiceImpl implements PersonajeService{
 
     @Autowired private ModelMapper modelMapper;
     @Autowired private PersonajeRepository personajeRepository;
-    @Autowired private PeliculaSerieRepository peliculaSerieRepository;
+    @Autowired private PeliculaRepository peliculaRepository;
 
 
     @Override
@@ -92,7 +92,7 @@ public class PersonajeServiceImpl implements PersonajeService{
 
     private Page<Personaje> filterPersonaje(String nombre, int edad, Long idMovie, Pageable pageable) {
         Page<Personaje> personajes = null;
-        Optional<PeliculaSerie> peliculaSerie = peliculaSerieRepository.findById(idMovie);
+        Optional<Pelicula> peliculaSerie = peliculaRepository.findById(idMovie);
 
         if(nombre == null && edad == 0 && idMovie == 0){
             personajes = personajeRepository.findAll(pageable);
@@ -100,16 +100,16 @@ public class PersonajeServiceImpl implements PersonajeService{
             personajes = personajeRepository.findPersonajeByNombreAndEdad(nombre, edad, pageable);
         } else if (nombre != null && edad == 0 && idMovie > 0) {
             personajes = personajeRepository
-                    .findPersonajeByNombreAndPeliculaSeries(nombre, peliculaSerie.get(), pageable);
+                    .findPersonajeByNombreAndPeliculas(nombre, peliculaSerie.get(), pageable);
         }else if(nombre == null && edad != 0 && idMovie > 0){
             personajes = personajeRepository
-                    .findPersonajeByEdadAndPeliculaSeries(edad, peliculaSerie.get(), pageable);
+                    .findPersonajeByEdadAndPeliculas(edad, peliculaSerie.get(), pageable);
         }else if (nombre != null){
             personajes = personajeRepository.findPersonajeByNombre(nombre,pageable);
         } else if (edad != 0) {
             personajes = personajeRepository.findPersonajeByEdad(edad, pageable);
         } else if (idMovie > 0) {
-            personajes = personajeRepository.findPersonajeByPeliculaSeries(peliculaSerie.get(), pageable);
+            personajes = personajeRepository.findPersonajeByPeliculas(peliculaSerie.get(), pageable);
         }
         return personajes;
     }
