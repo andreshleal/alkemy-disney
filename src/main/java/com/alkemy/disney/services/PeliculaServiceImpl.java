@@ -4,6 +4,7 @@ import com.alkemy.disney.dto.PeliculaDTO;
 import com.alkemy.disney.dto.RespuestaPaginationDTO;
 import com.alkemy.disney.entities.Genero;
 import com.alkemy.disney.entities.Pelicula;
+import com.alkemy.disney.entities.Personaje;
 import com.alkemy.disney.exceptions.ResourceNotFoundException;
 import com.alkemy.disney.repositories.GeneroRepository;
 import com.alkemy.disney.repositories.PeliculaRepository;
@@ -96,7 +97,6 @@ public class PeliculaServiceImpl implements PeliculaService {
     }
 
 
-
     private Page<Pelicula> filterPeliculaSerie(String titulo, Long idGenero, Pageable pageable) {
         Page<Pelicula> peliculaSeries = null;
         Optional<Genero> genero = generoRepository.findById(idGenero);
@@ -117,6 +117,31 @@ public class PeliculaServiceImpl implements PeliculaService {
         }
 
         return peliculaSeries;
+    }
+
+
+    @Override
+    public PeliculaDTO agregarPersonaje(Long idPelicula, Long idPersonaje) {
+        Optional<Pelicula> pelicula = peliculaRepository.findById(idPelicula);
+        pelicula.orElseThrow(() -> new ResourceNotFoundException("Pelicula","id",idPelicula));
+
+        Optional<Personaje> personaje = personajeRepository.findById(idPersonaje);
+        personaje.orElseThrow(() -> new ResourceNotFoundException("Personaje","id",idPersonaje));
+
+        pelicula.get().getPersonajes().add(personaje.get());
+        return peliculaAPeliculaDTO(peliculaRepository.save(pelicula.get()));
+    }
+
+    @Override
+    public PeliculaDTO eliminarPersonaje(Long idPelicula, Long idPersonaje) {
+        Optional<Pelicula> pelicula = peliculaRepository.findById(idPelicula);
+        pelicula.orElseThrow(() -> new ResourceNotFoundException("Pelicula","id",idPelicula));
+
+        Optional<Personaje> personaje = personajeRepository.findById(idPersonaje);
+        personaje.orElseThrow(() -> new ResourceNotFoundException("Personaje","id",idPersonaje));
+
+        pelicula.get().getPersonajes().remove(personaje.get());
+        return peliculaAPeliculaDTO(peliculaRepository.save(pelicula.get()));
     }
 
 

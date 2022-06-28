@@ -18,6 +18,10 @@ public interface PeliculaService {
 
     public void deletePelicula(Long id);
 
+    public PeliculaDTO agregarPersonaje(Long idPelicula, Long idPersonaje);
+
+    public PeliculaDTO eliminarPersonaje(Long idPelicula, Long idPersonaje);
+
 
 
 }
