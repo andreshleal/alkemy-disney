@@ -25,6 +25,20 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         ), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(UserExistException.class)
+    public ResponseEntity<ErrorDetalleDTO> HandlerUserExist(
+            UserExistException userExistException,
+            WebRequest webRequest
+    ){
+        return new ResponseEntity<>(new ErrorDetalleDTO(
+                new Date(),
+                userExistException.getMessage(),
+                webRequest.getDescription(false)
+        ), HttpStatus.BAD_REQUEST);
+    }
+
+
+
 
 
 }
